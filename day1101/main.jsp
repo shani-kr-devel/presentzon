@@ -163,6 +163,8 @@
 
 	<footer>
 		<div class="container">© <%= java.time.Year.now() %> SoftMart — All rights reserved.</div>
+        <div class="container">© <%= java.time.Year.now() %> SoftMart — All rights reserved.</div>
+	</footer>
 	</footer>
 </body>
 </html>
