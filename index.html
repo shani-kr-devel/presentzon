@@ -2,398 +2,174 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Quick Ticket Survey</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Date Calculator</title>
 <style>
-  :root{
-    --bg:#0F1226;
-    --bg-2:#171B37;
-    --ticket:#1E2246;
-    --ticket-edge:#2B3060;
-    --ink:#F4F2EA;
-    --ink-dim:#A6A4C4;
-    --marigold:#FFB84D;
-    --marigold-ink:#3A2400;
-    --coral:#FF6F91;
-    --mint:#6EE7B7;
-    --mint-ink:#08321F;
-    --radius:22px;
+  * {
+    box-sizing: border-box;
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--bg);
-    background-image:
-      radial-gradient(circle at 12% 8%, rgba(255,184,77,0.10), transparent 40%),
-      radial-gradient(circle at 88% 92%, rgba(255,111,145,0.10), transparent 40%);
-    color:var(--ink);
-    font-family:'Space Grotesk', sans-serif;
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:24px 16px;
-  }
-  .app{ width:100%; max-width:420px; }
-  .stubs{ display:flex; gap:8px; justify-content:center; margin-bottom:18px; }
-  .stub{
-    flex:1; max-width:80px; height:6px; border-radius:4px;
-    background:var(--ticket-edge);
-    transition:background .3s ease;
-  }
-  .stub.done{ background:var(--marigold); }
-  .card{
-    position:relative;
-    background:var(--ticket);
-    border-radius:var(--radius);
-    padding:32px 24px 28px;
-    box-shadow:0 20px 50px rgba(0,0,0,0.35);
-    border:1px dashed var(--ticket-edge);
-    overflow:hidden;
-  }
-  .card::before, .card::after{
-    content:"";
-    position:absolute;
-    width:26px; height:26px;
-    background:var(--bg);
-    border-radius:50%;
-    top:50%; transform:translateY(-50%);
-  }
-  .card::before{ left:-13px; }
-  .card::after{ right:-13px; }
-  .eyebrow{
-    font-family:'Fredoka', sans-serif;
-    font-weight:600;
-    font-size:13px;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:var(--marigold);
-    margin:0 0 8px;
-  }
-  h1{
-    font-family:'Fredoka', sans-serif;
-    font-weight:700;
-    font-size:26px;
-    line-height:1.25;
-    margin:0 0 10px;
-  }
-  p.sub{
-    color:var(--ink-dim);
-    font-size:14px;
-    line-height:1.6;
-    margin:0 0 26px;
-  }
-  .screen{ display:none; }
-  .screen.active{ display:block; animation:fade .35s ease; }
-  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
 
-  .yn-field{
-    position:relative;
-    height:190px;
-    margin-bottom:8px;
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
   }
-  .btn{
-    font-family:'Fredoka', sans-serif;
-    font-weight:600;
-    font-size:16px;
-    border:none;
-    border-radius:14px;
-    padding:14px 26px;
-    cursor:pointer;
-    transition:transform .12s ease;
-  }
-  .btn:active{ transform:scale(.96); }
-  .btn-yes{
-    background:var(--marigold);
-    color:var(--marigold-ink);
-    position:absolute;
-    left:24px; top:20px;
-  }
-  .btn-no{
-    background:var(--coral);
-    color:#3A0A18;
-    position:absolute;
-    right:24px; top:20px;
-    transition:top .28s cubic-bezier(.34,1.56,.64,1), left .28s cubic-bezier(.34,1.56,.64,1), transform .2s ease;
-  }
-  .dodge-note{
-    font-size:12px;
-    color:var(--ink-dim);
-    min-height:16px;
-    margin:0;
-  }
-  .field-label{
-    display:block;
-    font-size:13px;
-    color:var(--ink-dim);
-    margin-bottom:8px;
-  }
-  input[type="date"]{
-    width:100%;
-    background:var(--bg-2);
-    border:1px solid var(--ticket-edge);
-    color:var(--ink);
-    font-family:'Space Grotesk', sans-serif;
-    font-size:16px;
-    border-radius:12px;
-    padding:14px 14px;
-    margin-bottom:22px;
-    outline:none;
-    color-scheme:dark;
-  }
-  input[type="date"]:focus{ border-color:var(--marigold); }
-  .btn-primary{
-    width:100%;
-    background:var(--marigold);
-    color:var(--marigold-ink);
-    padding:15px;
-    font-size:16px;
-    opacity:1;
-  }
-  .btn-primary:disabled{ opacity:.4; cursor:not-allowed; }
 
-  .check{
-    width:64px; height:64px;
-    border-radius:50%;
-    background:var(--mint);
-    display:flex; align-items:center; justify-content:center;
-    margin:0 auto 18px;
+  .card {
+    background: pink;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 16px;
+    padding: 24px 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    margin-top: 20px;
   }
-  .check svg{ width:30px; height:30px; }
-  .summary{
-    background:var(--bg-2);
-    border-radius:14px;
-    padding:14px 16px;
-    margin:18px 0;
+
+  h2 {
+    text-align: center;
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 22px;
   }
-  .summary-row{
-    display:flex; justify-content:space-between;
-    font-size:14px; padding:6px 0;
-    border-bottom:1px solid var(--ticket-edge);
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
-  .summary-row:last-child{ border-bottom:none; }
-  .summary-row span:first-child{ color:var(--ink-dim); }
-  .status-line{
-    text-align:center;
-    font-size:12px;
-    color:var(--ink-dim);
-    margin-top:16px;
+
+  label {
+    font-size: 15px;
+    color: #333333;
+    font-weight: bold;
   }
-  .restart{
-    display:block;
-    text-align:center;
-    margin-top:16px;
-    font-size:13px;
-    color:var(--marigold);
-    background:none; border:none; cursor:pointer;
-    font-family:'Space Grotesk', sans-serif;
+
+  input[type="date"] {
+    font-size: 16px;
+    padding: 10px 12px;
+    border: 2px solid #4facfe;
+    border-radius: 8px;
+    outline: none;
+    color: #333;
+  }
+
+  input[type="date"]:focus {
+    border-color: #026670;
+  }
+
+  button {
+    margin-top: 6px;
+    padding: 12px 14px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background: black;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+
+  button:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+  }
+
+  #resultList {
+    margin-top: 22px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f2fbfa;
+    border-left: 5px solid #00c6a9;
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+
+  .result-row:nth-child(even) {
+    background: #eaf6ff;
+    border-left-color: #4facfe;
+  }
+
+  .day-label {
+    font-weight: bold;
+    color: #026670;
+    font-size: 15px;
+  }
+
+  .date-value {
+    font-size: 15px;
+    color: #333333;
+  }
+
+  @media (max-width: 380px) {
+    .card {
+      padding: 18px 14px;
+    }
+    h2 {
+      font-size: 19px;
+    }
   }
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="stubs">
-    <div class="stub" id="stub-1"></div>
-    <div class="stub" id="stub-2"></div>
-    <div class="stub" id="stub-3"></div>
+
+<div class="card">
+  <h2> Date Calculator</h2>
+
+  <div class="input-group">
+    <label for="baseDate">Enter Date</label>
+    <input type="date" id="baseDate">
+    <button onclick="calculateDates()">Calculate</button>
   </div>
 
-  <div class="card">
-
-    <section class="screen active" id="screen-1">
-      <p class="eyebrow">Question 1 of 2</p>
-      <h1>Do you like surprises?</h1>
-      <p class="sub">Pick one. Careful, one of these buttons has a mind of its own.</p>
-      <div class="yn-field" id="yn-field">
-        <button class="btn btn-yes" id="btn-yes">Yes</button>
-        <button class="btn btn-no" id="btn-no">No</button>
-      </div>
-      <p class="dodge-note" id="dodge-note">&nbsp;</p>
-    </section>
-
-    <section class="screen" id="screen-2">
-      <p class="eyebrow">Question 2 of 2</p>
-      <h1>When works for you?</h1>
-      <p class="sub">Pick a date and we'll pencil you in.</p>
-      <label class="field-label" for="date-input">Preferred date</label>
-      <input type="date" id="date-input">
-      <input type="text" id="hp-field" name="website" autocomplete="off" tabindex="-1" style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;" aria-hidden="true">
-      <button class="btn btn-primary" id="btn-continue" disabled>Continue</button>
-    </section>
-
-    <section class="screen" id="screen-3">
-      <div class="check">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#08321F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <h1 style="text-align:center;">Thanks for playing!</h1>
-      <p class="sub" style="text-align:center;">Your answers are saved.</p>
-      <div class="summary">
-        <div class="summary-row"><span>Likes surprises</span><span id="sum-answer">—</span></div>
-        <div class="summary-row"><span>Times "No" escaped</span><span id="sum-dodges">—</span></div>
-        <div class="summary-row"><span>Preferred date</span><span id="sum-date">—</span></div>
-      </div>
-      <p class="status-line" id="save-status">Saving your response…</p>
-      <button class="restart" id="btn-restart">Fill it out again</button>
-    </section>
-
-  </div>
+  <div id="resultList"></div>
 </div>
 
 <script>
-(function(){
-  // ---- Supabase config ----
-  // Paste your own values from Settings -> API in your Supabase project.
-  var SUPABASE_URL = 'https://bmpcptewiullehhrpgrn.supabase.co/rest/v1/';
-  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtcGNwdGV3aXVsbGVoaHJwZ3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MjA5MDEsImV4cCI6MjEwMDM5NjkwMX0.s1010cV0LzuJSlOdhBVUJnnVUvzRcBifjmJz88t8guE';
-  // --------------------------
-
-  var pageLoadedAt = Date.now();
-  var state = { dodges: 0, date: null, answer: 'yes' };
-
-  var screens = { 1: document.getElementById('screen-1'), 2: document.getElementById('screen-2'), 3: document.getElementById('screen-3') };
-  var stubs = { 1: document.getElementById('stub-1'), 2: document.getElementById('stub-2'), 3: document.getElementById('stub-3') };
-
-  function goTo(n){
-    Object.keys(screens).forEach(function(k){
-      screens[k].classList.toggle('active', Number(k) === n);
-    });
-    Object.keys(stubs).forEach(function(k){
-      stubs[k].classList.toggle('done', Number(k) <= n);
-    });
+function calculateDates() {
+  var input = document.getElementById('baseDate').value;
+  if (!input) {
+    alert('Please select a date first.');
+    return;
   }
 
-  var yesBtn = document.getElementById('btn-yes');
-  var noBtn = document.getElementById('btn-no');
-  var field = document.getElementById('yn-field');
-  var dodgeNote = document.getElementById('dodge-note');
+  var offsets = [0, 2, 6, 13, 20, 27, 41];
+  var baseDate = new Date(input + 'T00:00:00');
 
-  var quips = [
-    "Nope, try again.",
-    "Not today!",
-    "So close.",
-    "Almost had it.",
-    "It's quick.",
-    "Keep trying!"
-  ];
+  var resultList = document.getElementById('resultList');
+  resultList.innerHTML = '';
 
-  function moveNoButton(){
-    var fw = field.clientWidth, fh = field.clientHeight;
-    var bw = noBtn.offsetWidth || 70, bh = noBtn.offsetHeight || 46;
-    var maxLeft = Math.max(fw - bw - 8, 8);
-    var maxTop = Math.max(fh - bh - 8, 8);
-    var newLeft, newTop, tries = 0;
-    var yesBox = { left: yesBtn.offsetLeft, top: yesBtn.offsetTop, right: yesBtn.offsetLeft + yesBtn.offsetWidth, bottom: yesBtn.offsetTop + yesBtn.offsetHeight };
-    do {
-      newLeft = Math.round(8 + Math.random() * (maxLeft - 8));
-      newTop = Math.round(8 + Math.random() * (maxTop - 8));
-      tries++;
-    } while (
-      tries < 8 &&
-      newLeft < yesBox.right + 12 && newLeft + bw > yesBox.left - 12 &&
-      newTop < yesBox.bottom + 12 && newTop + bh > yesBox.top - 12
-    );
-    noBtn.style.left = newLeft + 'px';
-    noBtn.style.top = newTop + 'px';
-    noBtn.style.right = 'auto';
-    state.dodges++;
-    dodgeNote.textContent = quips[state.dodges % quips.length];
-  }
+  offsets.forEach(function(days) {
+    var newDate = new Date(baseDate);
+    newDate.setDate(newDate.getDate() + days);
 
-  ['pointerdown','mouseenter','focus','touchstart'].forEach(function(evt){
-    noBtn.addEventListener(evt, function(e){
-      e.preventDefault();
-      moveNoButton();
-    }, { passive: false });
-  });
-  noBtn.addEventListener('click', function(e){ e.preventDefault(); moveNoButton(); });
+    var day = String(newDate.getDate()).padStart(2, '0');
+    var month = String(newDate.getMonth() + 1).padStart(2, '0');
+    var year = newDate.getFullYear();
+    var formatted = day + '-' + month + '-' + year;
 
-  yesBtn.addEventListener('click', function(){
-    state.answer = 'yes';
-    goTo(2);
+    var row = document.createElement('div');
+    row.className = 'result-row';
+    row.innerHTML = '<span class="day-label">Day ' + (days + 1) + '</span><span class="date-value">' + formatted + '</span>';
+    resultList.appendChild(row);
   });
 
-  var dateInput = document.getElementById('date-input');
-  var continueBtn = document.getElementById('btn-continue');
-  var today = new Date().toISOString().split('T')[0];
-  dateInput.min = today;
-
-  dateInput.addEventListener('change', function(){
-    continueBtn.disabled = !dateInput.value;
-  });
-
-  continueBtn.addEventListener('click', function(){
-    state.date = dateInput.value;
-    goTo(3);
-    submitResponse();
-  });
-
-  document.getElementById('btn-restart').addEventListener('click', function(){
-    state = { dodges: 0, date: null, answer: 'yes' };
-    dateInput.value = '';
-    continueBtn.disabled = true;
-    dodgeNote.textContent = '\u00A0';
-    noBtn.style.left = ''; noBtn.style.top = ''; noBtn.style.right = '24px';
-    document.getElementById('save-status').textContent = 'Saving your response…';
-    goTo(1);
-  });
-
-  function formatDate(d){
-    if(!d) return '—';
-    var parts = d.split('-');
-    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return months[parseInt(parts[1],10)-1] + ' ' + parseInt(parts[2],10) + ', ' + parts[0];
-  }
-
-  async function submitResponse(){
-    document.getElementById('sum-answer').textContent = 'Yes';
-    document.getElementById('sum-dodges').textContent = state.dodges;
-    document.getElementById('sum-date').textContent = formatDate(state.date);
-
-    var statusEl = document.getElementById('save-status');
-
-    var honeypot = document.getElementById('hp-field').value;
-    var elapsed = Date.now() - pageLoadedAt;
-    if (honeypot || elapsed < 1500) {
-      statusEl.textContent = 'Saved.';
-      return;
-    }
-
-    var record = {
-      q1_likes_surprises: state.answer,
-      q1_no_dodge_count: state.dodges,
-      q2_preferred_date: state.date
-    };
-
-    if (SUPABASE_URL.indexOf('YOUR-PROJECT') !== -1) {
-      statusEl.textContent = 'Add your Supabase URL and key in the code to enable saving.';
-      return;
-    }
-
-    try {
-      var res = await fetch(SUPABASE_URL + '/rest/v1/responses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify(record)
-      });
-      if (res.ok) {
-        statusEl.textContent = 'Saved to the database.';
-      } else {
-        statusEl.textContent = 'Could not save — please try again.';
-      }
-    } catch (err) {
-      statusEl.textContent = 'Could not save — please try again.';
-    }
-  }
-
-})();
+  resultList.style.display = 'flex';
+}
 </script>
+
 </body>
 </html>
