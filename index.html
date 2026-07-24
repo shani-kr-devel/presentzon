@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0F1226;
+    --bg:#f187da;
     --bg-2:#171B37;
     --ticket:#1E2246;
     --ticket-edge:#2B3060;
@@ -204,9 +204,9 @@
   <div class="card">
 
     <section class="screen active" id="screen-1">
-      <p class="eyebrow">Question 1 of 2</p>
-      <h1>Do you like surprises?</h1>
-      <p class="sub">Pick one. Careful, one of these buttons has a mind of its own.</p>
+      <p class="eyebrow">Hi, Aksha</p>
+      <h1> kya hua abhi tk naraj ho ?</h1>
+      <p class="sub"></p>
       <div class="yn-field" id="yn-field">
         <button class="btn btn-yes" id="btn-yes">Yes</button>
         <button class="btn btn-no" id="btn-no">No</button>
@@ -215,9 +215,9 @@
     </section>
 
     <section class="screen" id="screen-2">
-      <p class="eyebrow">Question 2 of 2</p>
-      <h1>When works for you?</h1>
-      <p class="sub">Pick a date and we'll pencil you in.</p>
+      <p class="eyebrow">ohh naraj ho </p>
+      <h1>shayd kuch jyada hi overthink krthi ho tum meri trh</h1>
+      <p class="sub">kis din free ho?   </p>
       <label class="field-label" for="date-input">Preferred date</label>
       <input type="date" id="date-input">
       <input type="text" id="hp-field" name="website" autocomplete="off" tabindex="-1" style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;" aria-hidden="true">
@@ -228,12 +228,13 @@
       <div class="check">
         <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#08321F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-      <h1 style="text-align:center;">Thanks for playing!</h1>
-      <p class="sub" style="text-align:center;">Your answers are saved.</p>
+      <h1 style="text-align:center;">Thanks 
+      </h1>
+      <p class="sub" style="text-align:center;">thik hai</p>
       <div class="summary">
-        <div class="summary-row"><span>Likes surprises</span><span id="sum-answer">—</span></div>
-        <div class="summary-row"><span>Times "No" escaped</span><span id="sum-dodges">—</span></div>
-        <div class="summary-row"><span>Preferred date</span><span id="sum-date">—</span></div>
+        <div class="summary-row"><span>kesa bna hai ye</span><span id="sum-answer">—</span></div>
+        <div class="summary-row"><span></span><span id="sum-dodges">—</span></div>
+        <div class="summary-row"><span></span><span id="sum-date">—</span></div>
       </div>
       <p class="status-line" id="save-status">Opening WhatsApp…</p>
       <button class="restart" id="btn-restart">Fill it out again</button>
@@ -247,7 +248,7 @@
   // ---- WhatsApp config ----
   // Full number with country code, digits only, no + no spaces no dashes.
   // Example: country code 1, number 4721347320 -> '14721347320'
-  var WHATSAPP_NUMBER ='';
+  var WHATSAPP_NUMBER = '917303036783';
   // --------------------------
 
   var pageLoadedAt = Date.now();
@@ -271,12 +272,10 @@
   var dodgeNote = document.getElementById('dodge-note');
 
   var quips = [
-    "Nope, try again.",
-    "Not today!",
-    "So close.",
-    "Almost had it.",
-    "It's quick.",
-    "Keep trying!"
+    "tum ho!",
+    "sahi me?",
+    "lgta to nhi.",
+    "muhje to lg raha h tum naraj ho.",
   ];
 
   function moveNoButton(){
@@ -362,10 +361,10 @@
     }
 
     var message =
-      'New survey response\n' +
-      'Likes surprises: Yes\n' +
-      'Times "No" escaped: ' + state.dodges + '\n' +
-      'Preferred date: ' + formatDate(state.date);
+      'ok\n' +
+      'thanks:\n' +
+      'time: ' + state.dodges + '\n' +
+      'milte hai fir : ' + formatDate(state.date);
 
     var waLink = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message);
 
