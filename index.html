@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Date Calculator</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .card {
+    background: pink;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 16px;
+    padding: 24px 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    margin-top: 20px;
+  }
+
+  h2 {
+    text-align: center;
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 22px;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  label {
+    font-size: 15px;
+    color: #333333;
+    font-weight: bold;
+  }
+
+  input[type="date"] {
+    font-size: 16px;
+    padding: 10px 12px;
+    border: 2px solid #4facfe;
+    border-radius: 8px;
+    outline: none;
+    color: #333;
+  }
+
+  input[type="date"]:focus {
+    border-color: #026670;
+  }
+
+  button {
+    margin-top: 6px;
+    padding: 12px 14px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background: black;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+
+  button:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+  }
+
+  #resultList {
+    margin-top: 22px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f2fbfa;
+    border-left: 5px solid #00c6a9;
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+
+  .result-row:nth-child(even) {
+    background: #eaf6ff;
+    border-left-color: #4facfe;
+  }
+
+  .day-label {
+    font-weight: bold;
+    color: #026670;
+    font-size: 15px;
+  }
+
+  .date-value {
+    font-size: 15px;
+    color: #333333;
+  }
+
+  @media (max-width: 380px) {
+    .card {
+      padding: 18px 14px;
+    }
+    h2 {
+      font-size: 19px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2> Date Calculator</h2>
+
+  <div class="input-group">
+    <label for="baseDate">Enter Date</label>
+    <input type="date" id="baseDate">
+    <button onclick="calculateDates()">Calculate</button>
+  </div>
+
+  <div id="resultList"></div>
+</div>
+
+<script>
+function calculateDates() {
+  var input = document.getElementById('baseDate').value;
+  if (!input) {
+    alert('Please select a date first.');
+    return;
+  }
+
+  var offsets = [0, 2, 6, 13, 20, 27, 41];
+  var baseDate = new Date(input + 'T00:00:00');
+
+  var resultList = document.getElementById('resultList');
+  resultList.innerHTML = '';
+
+  offsets.forEach(function(days) {
+    var newDate = new Date(baseDate);
+    newDate.setDate(newDate.getDate() + days);
+
+    var day = String(newDate.getDate()).padStart(2, '0');
+    var month = String(newDate.getMonth() + 1).padStart(2, '0');
+    var year = newDate.getFullYear();
+    var formatted = day + '-' + month + '-' + year;
+
+    var row = document.createElement('div');
+    row.className = 'result-row';
+    row.innerHTML = '<span class="day-label">Day ' + (days + 1) + '</span><span class="date-value">' + formatted + '</span>';
+    resultList.appendChild(row);
+  });
+
+  resultList.style.display = 'flex';
+}
+</script>
+
+</body>
+</html>
