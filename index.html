@@ -3,173 +3,442 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Date Calculator</title>
+<title>The Network — Our Circle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * {
-    box-sizing: border-box;
+  :root{
+    --ink:#15171c;
+    --sub:#6b7280;
+    --blue:#2f6fed;
+    --orange:#f5871f;
+    --green:#12a150;
+    --yellow:#f4b400;
+    --paper:#ffffff;
   }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{ min-height:100%; background:var(--paper); color:var(--ink); font-family:'Manrope',sans-serif; overflow-x:hidden; }
 
-  body {
-    font-family: Arial, Helvetica, sans-serif;
-    margin: 0;
-    padding: 20px;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+  /* ---------- Background video with reduced transparency ---------- */
+  .bg-video-wrap{ position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+  .bg-video-wrap video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.45; filter:grayscale(20%); }
+  .bg-video-wrap::after{ content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.2) 0%, rgba(255,255,255,.5) 60%, rgba(255,255,255,.7) 100%); pointer-events:none; }
+
+  header{ text-align:center; padding:52px 20px 6px; position:relative; z-index:2; }
+  .eyebrow{ font-size:11px; letter-spacing:.35em; text-transform:uppercase; color:var(--blue); font-weight:700; }
+  h1{ font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:clamp(34px, 6vw, 58px); letter-spacing:-.02em; margin-top:8px; }
+  h1 span{ color:var(--orange); }
+  .sub{ margin-top:8px; font-size:14px; color:var(--sub); }
+
+  /* ---------- Stage ---------- */
+  .stage{ position:relative; z-index:2; width:min(880px, 95vw); aspect-ratio:1/1; margin:10px auto 20px; touch-action:none; }
+  svg.threads{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }
+  svg.threads line{ stroke-width:1.6; stroke-linecap:round; transition:stroke-width .3s ease, opacity .3s ease; }
+  svg.threads line.dim{ opacity:.15; }
+  svg.threads line.lit{ stroke-width:2.6; }
+
+  /* ---------- decorative scattered shapes ---------- */
+  .deco{ position:absolute; z-index:1; pointer-events:none; animation:bob 6s ease-in-out infinite; }
+  .deco.ring{ border-radius:50%; border-style:solid; background:transparent; }
+  .deco.dot{ border-radius:50%; }
+  .deco.dash{ border-radius:3px; }
+  @keyframes bob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-7px);} }
+
+  /* ---------- Nodes (friends) ---------- */
+  .node{ position:absolute; width:100px; touch-action:none; transform:translate(-50%,-50%); cursor:grab; text-align:center; z-index:4; user-select:none; }
+  .node.dragging{ cursor:grabbing; z-index:6; }
+  .node .float{ animation:float 5s ease-in-out infinite; }
+  .node.dragging .float{ animation:none; }
+  @keyframes float{ 0%,100%{ transform:translateY(0px);} 50%{ transform:translateY(-8px);} }
+  .node.dim .frame{ opacity:.25; }
+
+  .frame{ position:relative; width:74px; height:74px; margin:0 auto; border-radius:50%; transition:transform .3s cubic-bezier(.2,.8,.2,1), opacity .3s ease; }
+  .node:hover .frame, .node:focus-visible .frame{ transform:scale(1.1); }
+  .node.dragging .frame{ transform:scale(1.15); }
+
+  /* solid-fill style circle */
+  .frame.solid .ring{ position:absolute; inset:0; border-radius:50%; background:var(--c1); box-shadow:0 6px 16px -6px rgba(0,0,0,.3); }
+
+  /* outlined style circle with a loose dashed halo */
+  .frame.outline .dash-ring{ position:absolute; inset:-11px; border-radius:50%; border:1.6px dashed var(--c1); opacity:.55; }
+  .frame.outline .ring{ position:absolute; inset:0; border-radius:50%; border:2px solid var(--c1); background:#fff; }
+
+  .content{ position:absolute; inset:0; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .frame.outline .content{ inset:2px; color:var(--c1); }
+  .frame.solid .content{ color:#fff; }
+  .content .icon-inner{ width:52%; height:52%; }
+  .content .icon-inner svg{ width:100%; height:100%; display:block; }
+  .content img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  /* ---------- Center "Me" node ---------- */
+  .me-node{ position:absolute; width:120px; touch-action:none; transform:translate(-50%,-50%); z-index:5; text-align:center; cursor:grab; user-select:none; }
+  .me-node.dragging{ cursor:grabbing; }
+  .me-frame{ position:relative; width:96px; height:96px; margin:0 auto; border-radius:50%; }
+  .me-frame .ring{ position:absolute; inset:0; border-radius:50%; border:2.4px solid var(--blue); background:#fff; box-shadow:0 8px 22px -6px rgba(0,0,0,.25); }
+  .me-frame .me-content{ position:absolute; inset:3px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; color:var(--blue); }
+  .me-frame .me-content img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .me-frame .me-content .icon-inner{ width:48%; height:48%; }
+  .ripple{ position:absolute; inset:0; border-radius:50%; border:1.5px solid rgba(47,111,237,.3); animation:ripple 3.2s ease-out infinite; pointer-events:none; }
+  .ripple:nth-child(2){ animation-delay:1.05s; }
+  .ripple:nth-child(3){ animation-delay:2.1s; }
+  @keyframes ripple{ 0%{ transform:scale(1); opacity:.7;} 100%{ transform:scale(2.1); opacity:0;} }
+
+  /* ---------- Controls & Hint ---------- */
+  .controls{ position:fixed; right:22px; bottom:22px; z-index:20; display:flex; gap:10px; }
+  .ctrl-btn{ width:46px; height:46px; border-radius:50%; background:#fff; border:1.5px solid #e5e5eb; box-shadow:0 6px 18px -6px rgba(0,0,0,.18); color:var(--ink); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:border-color .3s, transform .2s; }
+  .ctrl-btn:hover{ border-color:var(--blue); transform:translateY(-2px); }
+  .ctrl-btn svg{ width:18px; height:18px; }
+  .hint{ position:fixed; left:22px; bottom:22px; z-index:20; font-size:11.5px; color:var(--sub); background:#fff; border:1.5px solid #e5e5eb; padding:8px 12px; border-radius:20px; box-shadow:0 6px 18px -6px rgba(0,0,0,.14); }
+
+  /* ---------- Modal ---------- */
+  .overlay{ position:fixed; inset:0; z-index:50; background:rgba(21,23,28,.45); backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .35s ease; padding:20px; }
+  .overlay.open{ opacity:1; pointer-events:auto; }
+
+  .card{ width:min(420px, 100%); background:#fff; border-radius:20px; padding:36px 32px 30px; position:relative; text-align:center; transform:scale(.72) translateY(30px); opacity:0; transition:transform .5s cubic-bezier(.2,.9,.25,1.25), opacity .4s ease; box-shadow:0 30px 80px -20px rgba(0,0,0,.35); }
+  .overlay.open .card{ transform:scale(1) translateY(0); opacity:1; }
+
+  .card .close{ position:absolute; top:16px; right:16px; width:30px; height:30px; border-radius:50%; border:1.5px solid #e5e5eb; background:transparent; color:var(--sub); cursor:pointer; font-size:15px; line-height:1; }
+  .card .close:hover{ color:var(--ink); border-color:var(--sub); }
+
+  .card .frame-lg{ position:relative; width:118px; height:118px; margin:0 auto 16px; border-radius:50%; overflow:hidden; background:var(--c1); box-shadow:0 10px 26px -8px rgba(0,0,0,.3); }
+  .card .frame-lg .ring{ position:absolute; inset:0; border-radius:50%; }
+  .card .frame-lg .content-lg{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; overflow:hidden; }
+  .card .frame-lg .content-lg img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .card .frame-lg .content-lg .icon-inner{ width:48%; height:48%; }
+
+  .card .name{ font-family:'Space Grotesk', sans-serif; font-size:28px; font-weight:700; }
+  .card .role{ margin-top:2px; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--blue); font-weight:700; }
+  .card .quote{ margin:14px 0 16px; font-style:italic; font-size:15px; color:var(--sub); line-height:1.55; }
+  .card .meta{ display:flex; justify-content:center; gap:20px; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--sub); border-top:1px solid #eee; padding-top:14px; margin-top:4px; margin-bottom:22px; }
+  .card .meta span b{ display:block; color:var(--ink); font-family:'Manrope'; font-size:13px; text-transform:none; letter-spacing:0; margin-top:3px; font-weight:700; }
+
+  /* ---------- Glow-on-hover profile link ---------- */
+  .glow-on-hover{ width:100%; height:48px; border:none; outline:none; color:#fff; background:#111; cursor:pointer; position:relative; z-index:0; border-radius:10px;
+    font-family:'Manrope', sans-serif; font-size:13.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+    display:flex; align-items:center; justify-content:center; text-decoration:none; }
+  .glow-on-hover:before{ content:''; background:linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    position:absolute; top:-2px; left:-2px; background-size:400%; z-index:-1; filter:blur(6px);
+    width:calc(100% + 4px); height:calc(100% + 4px); animation:glowing 20s linear infinite; opacity:0; transition:opacity .3s ease-in-out; border-radius:10px; }
+  .glow-on-hover:active{ color:#000; }
+  .glow-on-hover:hover:before{ opacity:1; }
+  .glow-on-hover:after{ z-index:-1; content:''; position:absolute; width:100%; height:100%; background:#111; left:0; top:0; border-radius:10px; }
+  @keyframes glowing{ 0%{ background-position:0 0; } 50%{ background-position:400% 0; } 100%{ background-position:0 0; } }
+
+  @media (prefers-reduced-motion: reduce){
+    .ripple, .float, .deco{ animation:none; }
   }
-
-  .card {
-    background: pink;
-    width: 100%;
-    max-width: 420px;
-    border-radius: 16px;
-    padding: 24px 20px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-    margin-top: 20px;
-  }
-
-  h2 {
-    text-align: center;
-    color: #ffffff;
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 22px;
-  }
-
-  .input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  label {
-    font-size: 15px;
-    color: #333333;
-    font-weight: bold;
-  }
-
-  input[type="date"] {
-    font-size: 16px;
-    padding: 10px 12px;
-    border: 2px solid #4facfe;
-    border-radius: 8px;
-    outline: none;
-    color: #333;
-  }
-
-  input[type="date"]:focus {
-    border-color: #026670;
-  }
-
-  button {
-    margin-top: 6px;
-    padding: 12px 14px;
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    background: black;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.15s ease, opacity 0.15s ease;
-  }
-
-  button:active {
-    transform: scale(0.97);
-    opacity: 0.9;
-  }
-
-  #resultList {
-    margin-top: 22px;
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .result-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #f2fbfa;
-    border-left: 5px solid #00c6a9;
-    border-radius: 8px;
-    padding: 12px 14px;
-  }
-
-  .result-row:nth-child(even) {
-    background: #eaf6ff;
-    border-left-color: #4facfe;
-  }
-
-  .day-label {
-    font-weight: bold;
-    color: #026670;
-    font-size: 15px;
-  }
-
-  .date-value {
-    font-size: 15px;
-    color: #333333;
-  }
-
-  @media (max-width: 380px) {
-    .card {
-      padding: 18px 14px;
-    }
-    h2 {
-      font-size: 19px;
-    }
+  @media (max-width:560px){
+    .node{ width:76px; } .frame{ width:58px; height:58px; }
+    .me-node{ width:96px; } .me-frame{ width:74px; height:74px; }
+    .hint{ display:none; }
   }
 </style>
 </head>
 <body>
 
-<div class="card">
-  <h2> Date Calculator</h2>
-
-  <div class="input-group">
-    <label for="baseDate">Enter Date</label>
-    <input type="date" id="baseDate">
-    <button onclick="calculateDates()">Calculate</button>
+  <div class="bg-video-wrap">
+    <!-- Video starts muted to comply with browser autoplay policies -->
+    <video autoplay muted loop playsinline id="bgVideo">
+      <source src="video.mp4" type="video/mp4">
+    </video>
   </div>
 
-  <div id="resultList"></div>
-</div>
+  <div class="stage" id="stage">
+    <svg class="threads" id="threadsSvg"></svg>
+  </div>
+
+  <div class="hint">Try dragging a circle (Click center for your card)</div>
+  
+  <!-- Mute / Unmute Control Button -->
+  <div class="controls">
+    <button class="ctrl-btn" id="audioToggleBtn" aria-label="Toggle Audio" title="Mute/Unmute Video Audio">
+      <svg id="audioIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <line x1="23" y1="9" x2="17" y2="15"></line>
+        <line x1="17" y1="9" x2="23" y2="15"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="card" id="card">
+      <button class="close" id="closeCard" aria-label="Close">✕</button>
+      <div class="frame-lg">
+        <div class="ring"></div>
+        <div class="content-lg" id="avatarLg"></div>
+      </div>
+      <div class="name" id="cName"></div>
+      <div class="role" id="cRole"></div>
+      <p class="quote" id="cQuote"></p>
+      <div class="meta">
+        <span>Since<b id="cSince"></b></span>
+        <span>Sign<b id="cSign"></b></span>
+        <span>Loves<b id="cLoves"></b></span>
+      </div>
+      <a class="glow-on-hover" id="cLink" href="#" target="_blank" rel="noopener">Visit Profile</a>
+    </div>
+  </div>
 
 <script>
-function calculateDates() {
-  var input = document.getElementById('baseDate').value;
-  if (!input) {
-    alert('Please select a date first.');
-    return;
+/* ============ YOUR DATA (CENTER NODE) ============ */
+const meData = {
+  image: "https://media.licdn.com/dms/image/v2/D4D03AQHmg3hdtxu3bQ/profile-displayphoto-crop_800_800/B4DZ9UbDh6K0AI-/0/1783827807204?e=1787184000&v=beta&t=gaQh2GRb_s-Ec64xbbIg5bED8kfc77nBozrWwIRvMxw",
+  name: "SHANI KUMAR",
+  role: "The Network Hub",
+  quote: "Connecting the dots and keeping the circle tight.",
+  since: "Always",
+  sign: "Sagittarius",
+  loves: "Innovation & Growth",
+  link: "https://www.linkedin.com/in/shani-kumar-335293365/"
+};
+
+/* ============ FRIENDS DATA ============ */
+const people = [
+  { image:"https://media.licdn.com/dms/image/v2/D4E03AQEB1_1ygQdWQQ/profile-displayphoto-crop_800_800/B4EZ7wetHXJEAI-/0/1782151042982?e=1787184000&v=beta&t=itiwC8Sv-_pUC3-WjmPzcSFTL1RaLljJfUzzCKWMxQU", name:"SAHIL KUMAR", role:"The Planner", quote:"Always the one texting \u201cwe're doing this trip\u201d", since:"2017", sign:"Leo", loves:"Innovation & Growth", link:"https://www.linkedin.com/in/sahil-kumar-574b52380/" },
+  { image:"https://media.licdn.com/dms/image/v2/D5635AQE_56qmMziLFw/profile-framedphoto-shrink_800_800/B56Z0GcBBXHkAg-/0/1773929501259?e=1786287600&v=beta&t=AlFg31c4YIpPyUyBruw9ceEUH2hGnrv3pHstf0hNrl0", name:"SANCHIT KUMAR", role:"THE VIBE CODER", quote:"Knows exactly what to say when everything feels like too much.", since:"2020", sign:"Pisces", loves:"Innovation & Growth", link:"https://www.linkedin.com/in/sanchit-kumar-a58799382/" },
+];
+
+const personIcon = `<div class="icon-inner"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.2"/><path d="M4 20c0-4.4 3.6-7.6 8-7.6s8 3.2 8 7.6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/></svg></div>`;
+const accentColors = ['blue','orange','green','yellow'];
+
+function randomPoint(existing, minDist, bounds){
+  bounds = bounds || {minX:8, maxX:92, minY:8, maxY:92};
+  for(let tries=0; tries<200; tries++){
+    const x = bounds.minX + Math.random()*(bounds.maxX-bounds.minX);
+    const y = bounds.minY + Math.random()*(bounds.maxY-bounds.minY);
+    const ok = existing.every(p => Math.hypot(p.x-x, p.y-y) >= minDist);
+    if(ok) return {x,y};
   }
-
-  var offsets = [0, 2, 6, 13, 20, 27, 41];
-  var baseDate = new Date(input + 'T00:00:00');
-
-  var resultList = document.getElementById('resultList');
-  resultList.innerHTML = '';
-
-  offsets.forEach(function(days) {
-    var newDate = new Date(baseDate);
-    newDate.setDate(newDate.getDate() + days);
-
-    var day = String(newDate.getDate()).padStart(2, '0');
-    var month = String(newDate.getMonth() + 1).padStart(2, '0');
-    var year = newDate.getFullYear();
-    var formatted = day + '-' + month + '-' + year;
-
-    var row = document.createElement('div');
-    row.className = 'result-row';
-    row.innerHTML = '<span class="day-label">Day ' + (days + 1) + '</span><span class="date-value">' + formatted + '</span>';
-    resultList.appendChild(row);
-  });
-
-  resultList.style.display = 'flex';
+  return {x: bounds.minX + Math.random()*(bounds.maxX-bounds.minX), y: bounds.minY + Math.random()*(bounds.maxY-bounds.minY)};
 }
-</script>
 
+let centerPos = randomPoint([], 0, {minX:38, maxX:62, minY:38, maxY:62});
+let positions = [];
+people.forEach(() => {
+  const p = randomPoint([centerPos, ...positions], 24);
+  positions.push(p);
+});
+
+const stage = document.getElementById('stage');
+const svg = document.getElementById('threadsSvg');
+svg.setAttribute('viewBox','0 0 100 100');
+svg.setAttribute('preserveAspectRatio','none');
+
+const lineEls = [];
+positions.forEach((pos, i) => {
+  const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+  line.dataset.i = i;
+  line.setAttribute('stroke', `var(--${accentColors[i % accentColors.length]})`);
+  svg.appendChild(line);
+  lineEls.push(line);
+});
+
+function redrawLine(i){
+  const pos = positions[i];
+  const line = lineEls[i];
+  line.setAttribute('x1', centerPos.x); line.setAttribute('y1', centerPos.y);
+  line.setAttribute('x2', pos.x);      line.setAttribute('y2', pos.y);
+}
+function redrawAll(){ positions.forEach((_,i)=> redrawLine(i)); }
+redrawAll();
+
+const decoCount = 16;
+const decoPositions = [];
+for(let i=0;i<decoCount;i++){
+  const pos = randomPoint([centerPos, ...positions, ...decoPositions], 6);
+  decoPositions.push(pos);
+  const kind = ['ring','dot','dash'][i % 3];
+  const color = `var(--${accentColors[i % accentColors.length]})`;
+  const el = document.createElement('div');
+  el.className = `deco ${kind}`;
+  el.style.left = pos.x + '%';
+  el.style.top = pos.y + '%';
+  el.style.animationDelay = (i * 0.35) + 's';
+  el.style.animationDuration = (5 + (i % 4)) + 's';
+  if(kind === 'ring'){
+    const size = 8 + (i % 3) * 4;
+    el.style.width = size + 'px'; el.style.height = size + 'px';
+    el.style.borderWidth = '1.6px'; el.style.borderColor = color;
+  } else if(kind === 'dot'){
+    const size = 4 + (i % 3) * 2;
+    el.style.width = size + 'px'; el.style.height = size + 'px';
+    el.style.background = color;
+  } else {
+    el.style.width = (10 + (i % 3) * 4) + 'px'; el.style.height = '2.4px';
+    el.style.background = color;
+    el.style.transform = `rotate(${(i * 37) % 180}deg)`;
+  }
+  stage.appendChild(el);
+}
+
+const meNode = document.createElement('div');
+meNode.className = 'me-node';
+meNode.id = 'meNode';
+meNode.style.left = centerPos.x + '%';
+meNode.style.top = centerPos.y + '%';
+meNode.setAttribute('tabindex', '0');
+meNode.setAttribute('role', 'button');
+meNode.setAttribute('aria-label', 'Open profile for ' + meData.name);
+
+const meInnerContent = meData.image ? `<img src="${meData.image}" alt="${meData.name}">` : personIcon;
+meNode.innerHTML = `
+  <div class="ripple"></div><div class="ripple"></div><div class="ripple"></div>
+  <div class="me-frame">
+    <div class="ring"></div>
+    <div class="me-content">${meInnerContent}</div>
+  </div>
+`;
+stage.appendChild(meNode);
+
+people.forEach((p, i) => {
+  const pos = positions[i];
+  const node = document.createElement('div');
+  node.className = 'node';
+  node.dataset.index = i;
+  node.style.left = pos.x + '%';
+  node.style.top = pos.y + '%';
+  node.setAttribute('tabindex', '0');
+  node.setAttribute('role','button');
+  node.setAttribute('aria-label', 'Open profile for ' + p.name);
+
+  const c1 = `var(--${accentColors[i % accentColors.length]})`;
+  const style = i % 2 === 0 ? 'solid' : 'outline';
+  const dashRing = style === 'outline' ? `<div class="dash-ring" style="transform:rotate(${(i*47)%360}deg)"></div>` : '';
+  const innerContent = p.image ? `<img src="${p.image}" alt="${p.name}">` : personIcon;
+
+  node.innerHTML = `
+    <div class="float" style="animation-delay:${(i*0.4).toFixed(2)}s">
+      <div class="frame ${style}" style="--c1:${c1}">
+        ${dashRing}
+        <div class="ring"></div>
+        <div class="content">${innerContent}</div>
+      </div>
+    </div>
+  `;
+  stage.appendChild(node);
+});
+
+const nodesEls = document.querySelectorAll('.node');
+
+function highlightFrom(idx){
+  lineEls.forEach(l=>{
+    const i = +l.dataset.i;
+    if(i===idx){ l.classList.add('lit'); l.classList.remove('dim'); } else { l.classList.add('dim'); l.classList.remove('lit'); }
+  });
+  nodesEls.forEach(n=>{
+    const ni = +n.dataset.index;
+    if(ni===idx){ n.classList.remove('dim'); } else { n.classList.add('dim'); }
+  });
+}
+function clearHighlight(){
+  lineEls.forEach(l=>{ l.classList.remove('lit'); l.classList.remove('dim'); });
+  nodesEls.forEach(n=> n.classList.remove('dim'));
+}
+
+const overlay = document.getElementById('overlay');
+const card = document.getElementById('card');
+const closeBtn = document.getElementById('closeCard');
+
+function openCard(p, isMe = false){
+  const c1 = isMe ? 'var(--blue)' : `var(--${accentColors[card.dataset.currentIndex % accentColors.length] || 0})`;
+  card.style.setProperty('--c1', c1);
+  document.getElementById('cName').textContent = p.name;
+  document.getElementById('cRole').textContent = p.role;
+  document.getElementById('cQuote').textContent = '\u201c' + p.quote + '\u201d';
+  document.getElementById('cSince').textContent = p.since;
+  document.getElementById('cSign').textContent = p.sign;
+  document.getElementById('cLoves').textContent = p.loves;
+  document.getElementById('cLink').href = p.link || '#';
+  document.getElementById('avatarLg').innerHTML = p.image ? `<img src="${p.image}" alt="${p.name}">` : personIcon;
+
+  if(!isMe){
+    highlightFrom(card.dataset.currentIndex);
+  } else {
+    clearHighlight();
+  }
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden','false');
+  closeBtn.focus();
+}
+
+function closeCard(){
+  overlay.classList.remove('open');
+  clearHighlight();
+}
+closeBtn.addEventListener('click', closeCard);
+overlay.addEventListener('click', e=>{ if(e.target===overlay) closeCard(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeCard(); });
+
+function makeDraggable(el, onMove, onClick){
+  let startX=0, startY=0, dragging=false;
+  const THRESH = 6;
+
+  el.addEventListener('pointerdown', e=>{
+    startX = e.clientX; startY = e.clientY; dragging = false;
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove', e=>{
+    if(e.buttons === 0) return;
+    const dx = e.clientX - startX, dy = e.clientY - startY;
+    if(!dragging && Math.hypot(dx,dy) > THRESH){ dragging = true; el.classList.add('dragging'); }
+    if(dragging){
+      const rect = stage.getBoundingClientRect();
+      let px = ((e.clientX - rect.left) / rect.width) * 100;
+      let py = ((e.clientY - rect.top) / rect.height) * 100;
+      px = Math.max(6, Math.min(94, px));
+      py = Math.max(6, Math.min(94, py));
+      el.style.left = px + '%'; el.style.top = py + '%';
+      onMove(px, py);
+    }
+  });
+  el.addEventListener('pointerup', e=>{
+    el.classList.remove('dragging');
+    if(!dragging){ onClick(); }
+    dragging = false;
+  });
+}
+
+nodesEls.forEach(node=>{
+  const i = +node.dataset.index;
+  makeDraggable(node, (px,py)=>{ positions[i] = {x:px,y:py}; redrawLine(i); }, ()=>{
+    card.dataset.currentIndex = i;
+    openCard(people[i], false);
+  });
+});
+
+makeDraggable(meNode, (px,py)=>{ centerPos = {x:px,y:py}; redrawAll(); }, ()=>{
+  openCard(meData, true);
+});
+
+/* ============ MUTE / UNMUTE LOGIC ============ */
+const bgVideo = document.getElementById('bgVideo');
+const audioToggleBtn = document.getElementById('audioToggleBtn');
+const audioIcon = document.getElementById('audioIcon');
+
+const mutedSvg = `
+  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+  <line x1="23" y1="9" x2="17" y2="15"></line>
+  <line x1="17" y1="9" x2="23" y2="15"></line>
+`;
+
+const unmutedSvg = `
+  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+`;
+
+audioToggleBtn.addEventListener('click', () => {
+  bgVideo.muted = !bgVideo.muted;
+  if(bgVideo.muted){
+    audioIcon.innerHTML = mutedSvg;
+    audioToggleBtn.style.borderColor = '#e5e5eb';
+  } else {
+    bgVideo.play().catch(()=>{});
+    audioIcon.innerHTML = unmutedSvg;
+    audioToggleBtn.style.borderColor = 'var(--blue)';
+  }
+});
+
+bgVideo.error && bgVideo.addEventListener('error', ()=>{ bgVideo.style.display='none'; }, true);
+</script>
 </body>
 </html>
